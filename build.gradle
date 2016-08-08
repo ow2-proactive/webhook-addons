@@ -1,0 +1,15 @@
+group 'mediametrie'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+    maven { url 'http://repository.activeeon.com/content/groups/proactive/' }
+}
+
+dependencies {
+    compile 'org.ow2.proactive:scheduler-api:7.3.1'
+}
