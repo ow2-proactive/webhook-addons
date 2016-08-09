@@ -1,9 +1,11 @@
-group 'mediametrie'
-version '1.0-SNAPSHOT'
+group 'org.ow2.proactive'
+version projectVersion
 
-apply plugin: 'java'
-
-sourceCompatibility = 1.8
+allprojects {
+     apply plugin: 'java'
+     sourceCompatibility = 1.8
+     targetCompatibility = 1.8
+}
 
 repositories {
     jcenter()
@@ -11,5 +13,14 @@ repositories {
 }
 
 dependencies {
-    compile 'org.ow2.proactive:scheduler-api:7.3.1'
+    compile "org.ow2.proactive:scheduler-api:$projectVersion"
 }
+
+jar {
+     from {
+         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+     }
+}
+
+
+
