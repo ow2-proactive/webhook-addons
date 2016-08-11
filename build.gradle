@@ -24,6 +24,8 @@ allprojects {
     }
 }
 
+defaultTasks 'clean', 'jar'
+
 repositories {
     if (project.hasProperty('local')) {
         mavenLocal()
@@ -39,6 +41,8 @@ dependencies {
 
 jar {
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.compile
+                .findAll { !it.name.toLowerCase().contains("slf4j") }
+                .collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
