@@ -32,72 +32,65 @@
  *
  *  * $$ACTIVEEON_INITIAL_DEV$$
  */
-package org.ow2.proactive.addons.webhook.task;
+package org.ow2.proactive.addons.webhook;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
 
-import org.ow2.proactive.scheduler.common.task.TaskResult;
-import org.ow2.proactive.scheduler.common.task.executable.JavaExecutable;
+import org.ow2.proactive.addons.webhook.exception.UnsuccessfulRequestException;
 
-public class WebhookTask extends JavaExecutable {
+public class Webhook {
 
-    private static final String ARG_USER_AGENT = "User-Agent";
-    private static final String ARG_METHOD = "method";
-    private static final String ARG_URL = "url";
-    private static final String ARG_POST_PARAMS = "post_params";
+    // Example with GET
+    // method: "GET"
+    // url: "http://www.activeeon.com"
+    // headers: "{User-Agent = Mozilla/5.0}"
 
-    private String user_agent = null;
-    private String method = null;
-    private String url = null;
-    private String post_params = null;
+    // Example with POST
+    // method: "POST"
+    // url: "http://trydev.activeeon.com:8080/connector-iaas/infrastructures"
+    // headers: "{User-Agent = Mozilla/5.0, Content-Type = application/json}"
+    // content: "{\"id\": \"demo-aws\",\"type\": \"aws-ec2\",\"credentials\": {\"username\": \"AKIAIXZCJACIJA7YL3AQ\",\"password\": \"fMWyE93klwSIzLxO8wTAnGlQNdNHWForaN6hMOq\"}}"
 
-
-
-    @Override
-    public void init(Map<String, Serializable> args) throws Exception {
-
-        if (args.containsKey(ARG_USER_AGENT)) {
-            this.user_agent = ((String) args.get(ARG_USER_AGENT));
-        }
-        if (args.containsKey(ARG_METHOD)) {
-            this.method = ((String) args.get(ARG_METHOD));
-        }
-        if (args.containsKey(ARG_URL)) {
-            this.url = ((String) args.get(ARG_URL));
-        }
-        if (args.containsKey(ARG_POST_PARAMS)) {
-            this.post_params = ((String) args.get(ARG_POST_PARAMS));
+    public static void setHeaders (HttpURLConnection con, String headers)
+    {
+        //remove whitespaces
+        headers = headers.replaceAll("\\s","");
+        //remove curly brackets
+        headers = headers.substring(1, headers.length()-1);
+        //split
+        String[] keyValuePairs = headers.split(",");
+        // iterate over headers
+        for(String pair : keyValuePairs)
+        {
+            String[] entry = pair.split("=");
+            con.setRequestProperty(entry[0].trim(), entry[1].trim());
         }
     }
 
-    @Override
-    public Serializable execute(TaskResult... taskResults) throws Throwable {
+    public static void execute(String method, String url, String headers, String content) throws Throwable  {
 
-        // Request construction & execution
-
-        URL obj = new URL(this.url);
+        URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod(this.method);
-        con.setRequestProperty(ARG_USER_AGENT, this.user_agent);
+        con.setRequestMethod(method);
+        setHeaders(con, headers);
 
+        // POST section
         if (method == "POST")
         {
+            con.setRequestProperty("Content-Length", "" + content.length());
             con.setDoOutput(true);
             OutputStream os = con.getOutputStream();
-            os.write(this.post_params.getBytes());
+            os.write(content.getBytes());
             os.flush();
             os.close();
         }
 
         // Request response
-
         int responseCode = con.getResponseCode();
         String responseCodeStr = method + " Response Code :: " + responseCode;
         System.out.println(responseCodeStr);
@@ -117,10 +110,9 @@ public class WebhookTask extends JavaExecutable {
 
             // print result
             System.out.println(response.toString());
-            return response.toString();
-        } else {
-            System.out.println(method + " request not worked");
-            return responseCodeStr;
+        } else
+        {
+            throw new UnsuccessfulRequestException(responseCodeStr);
         }
     }
 
