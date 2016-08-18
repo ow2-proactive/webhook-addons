@@ -38,6 +38,7 @@ repositories {
 dependencies {
     compile "org.ow2.proactive:scheduler-api:$projectVersion"
     compile 'org.json:json:20160810'
+    compile group: 'org.springframework.android', name: 'spring-android-rest-template', version: '1.0.1.RELEASE'
 }
 
 jar {
