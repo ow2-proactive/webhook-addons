@@ -30,15 +30,14 @@ repositories {
     if (project.hasProperty('local')) {
         mavenLocal()
     }
-
     jcenter()
-    maven { url 'http://repository.activeeon.com/content/groups/proactive/' }
 }
 
 dependencies {
-    compile "org.ow2.proactive:scheduler-api:$projectVersion"
     compile 'org.json:json:20160810'
     compile group: 'org.springframework.android', name: 'spring-android-rest-template', version: '1.0.1.RELEASE'
+    testCompile group: 'org.mockito', name: 'mockito-all', version:'1.9.5'
+    testCompile 'junit:junit:4.12'
 }
 
 jar {

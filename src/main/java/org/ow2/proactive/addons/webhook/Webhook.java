@@ -34,16 +34,14 @@
  */
 package org.ow2.proactive.addons.webhook;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import org.ow2.proactive.addons.webhook.exception.UnsuccessfulRequestException;
+import org.ow2.proactive.addons.webhook.service.JsonRestRequestService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 public class Webhook {
+
+    static private JsonRestRequestService jsonRestRequestService = new JsonRestRequestService();
 
     // Example with GET
     // method: "GET"
@@ -56,64 +54,17 @@ public class Webhook {
     // headers: "{User-Agent = Mozilla/5.0, Content-Type = application/json}"
     // content: "{\"id\": \"demo-aws\",\"type\": \"aws-ec2\",\"credentials\": {\"username\": \"AKIAIXZCJACIJA7YL3AQ\",\"password\": \"fMWyE93klwSIzLxO8wTAnGlQNdNHWForaN6hMOq\"}}"
 
-    public static void setHeaders (HttpURLConnection con, String headers)
-    {
-        //remove whitespaces
-        headers = headers.replaceAll("\\s","");
-        //remove curly brackets
-        headers = headers.substring(1, headers.length()-1);
-        //split
-        String[] keyValuePairs = headers.split(",");
-        // iterate over headers
-        for(String pair : keyValuePairs)
-        {
-            String[] entry = pair.split("=");
-            con.setRequestProperty(entry[0].trim(), entry[1].trim());
+    public static void execute(String method, String url, String headers, String content) throws Throwable {
+
+        ResponseEntity<String> restResponse = jsonRestRequestService.doRequest(method, headers, url, content);
+
+        if (isResponseCodeIndicatingFailure(restResponse)) {
+            throw new UnsuccessfulRequestException(restResponse.toString());
         }
     }
 
-    public static void execute(String method, String url, String headers, String content) throws Throwable  {
-
-        URL obj = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod(method);
-        setHeaders(con, headers);
-
-        // POST section
-        if (method == "POST")
-        {
-            con.setRequestProperty("Content-Length", "" + content.length());
-            con.setDoOutput(true);
-            OutputStream os = con.getOutputStream();
-            os.write(content.getBytes());
-            os.flush();
-            os.close();
-        }
-
-        // Request response
-        int responseCode = con.getResponseCode();
-        String responseCodeStr = method + " Response Code :: " + responseCode;
-        System.out.println(responseCodeStr);
-
-        if (responseCode == HttpURLConnection.HTTP_OK)
-        {
-            InputStream is = con.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = br.readLine()) != null) {
-                response.append(inputLine);
-            }
-            br.close();
-
-            // print result
-            System.out.println(response.toString());
-        } else
-        {
-            throw new UnsuccessfulRequestException(responseCodeStr);
-        }
+    private static boolean isResponseCodeIndicatingFailure(ResponseEntity<String> restCallResponse) {
+        return restCallResponse.getStatusCode().value() <= HttpStatus.BAD_REQUEST.value();
     }
 
 }
