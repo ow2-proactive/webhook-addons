@@ -37,6 +37,7 @@ repositories {
 
 dependencies {
     compile "org.ow2.proactive:scheduler-api:$projectVersion"
+    compile 'org.json:json:20160810'
 }
 
 jar {
