@@ -9,23 +9,21 @@ import org.ow2.proactive.addons.webhook.service.JsonRestRequestService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-class WebhookTest {
+public class WebhookExecutorTest {
 
     @Mock
     JsonRestRequestService mockJsonRestRequestService;
-
 
     @Test(expected = UnsuccessfulRequestException.class)
     public void testThatErrorResponseThrowsExceptionBadGateWay() throws Throwable {
         when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.BAD_GATEWAY));
 
-        Webhook.execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
     }
 
     @Test(expected = UnsuccessfulRequestException.class)
@@ -33,7 +31,7 @@ class WebhookTest {
         when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.UNAUTHORIZED));
 
-        Webhook.execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestRequestService).execute("POST", "", "", "");
     }
 
     @Test(expected = UnsuccessfulRequestException.class)
@@ -41,7 +39,7 @@ class WebhookTest {
         when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.FORBIDDEN));
 
-        Webhook.execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
     }
 
     @Test(expected = UnsuccessfulRequestException.class)
@@ -49,7 +47,7 @@ class WebhookTest {
         when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.NOT_FOUND));
 
-        Webhook.execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
     }
 
     @Test(expected = UnsuccessfulRequestException.class)
@@ -57,7 +55,7 @@ class WebhookTest {
         when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE));
 
-        Webhook.execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
     }
 
     @Test
@@ -65,7 +63,7 @@ class WebhookTest {
         when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.ACCEPTED));
 
-        Webhook.execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
     }
 
     @Test
@@ -73,7 +71,7 @@ class WebhookTest {
         when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.CREATED));
 
-        Webhook.execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
     }
 
     @Test
@@ -81,7 +79,7 @@ class WebhookTest {
         when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.OK));
 
-        Webhook.execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
     }
 
     @Test
@@ -89,6 +87,6 @@ class WebhookTest {
         when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.NON_AUTHORITATIVE_INFORMATION));
 
-        Webhook.execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
     }
 }

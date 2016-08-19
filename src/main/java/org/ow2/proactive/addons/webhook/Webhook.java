@@ -34,14 +34,10 @@
  */
 package org.ow2.proactive.addons.webhook;
 
-import org.ow2.proactive.addons.webhook.exception.UnsuccessfulRequestException;
 import org.ow2.proactive.addons.webhook.service.JsonRestRequestService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.ow2.proactive.addons.webhook.service.JsonStringToRestHttpHeaders;
 
 public class Webhook {
-
-    static private JsonRestRequestService jsonRestRequestService = new JsonRestRequestService();
 
     // Example with GET
     // method: "GET"
@@ -55,16 +51,6 @@ public class Webhook {
     // content: "{\"id\": \"demo-aws\",\"type\": \"aws-ec2\",\"credentials\": {\"username\": \"AKIAIXZCJACIJA7YL3AQ\",\"password\": \"fMWyE93klwSIzLxO8wTAnGlQNdNHWForaN6hMOq\"}}"
 
     public static void execute(String method, String url, String headers, String content) throws Throwable {
-
-        ResponseEntity<String> restResponse = jsonRestRequestService.doRequest(method, headers, url, content);
-
-        if (isResponseCodeIndicatingFailure(restResponse)) {
-            throw new UnsuccessfulRequestException(restResponse.toString());
-        }
+        new WebhookExecutor(new JsonRestRequestService(new JsonStringToRestHttpHeaders())).execute(method, url, headers, content);
     }
-
-    private static boolean isResponseCodeIndicatingFailure(ResponseEntity<String> restCallResponse) {
-        return restCallResponse.getStatusCode().value() <= HttpStatus.BAD_REQUEST.value();
-    }
-
 }

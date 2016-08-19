@@ -35,16 +35,17 @@
 package org.ow2.proactive.addons.webhook.service;
 
 
-import org.json.JSONObject;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+@AllArgsConstructor
 public class JsonRestRequestService {
 
-    private JsonStringToRestHttpHeaders jsonStringToRestHttpHeaders = new JsonStringToRestHttpHeaders();
+    private JsonStringToRestHttpHeaders jsonStringToRestHttpHeaders;
 
     public ResponseEntity<String> doRequest(String restMethod, String jsonHeader, String url, String content) {
         // Get rest method
@@ -56,6 +57,12 @@ public class JsonRestRequestService {
 
         HttpEntity<String> requestEntity = new HttpEntity<>(content, restTemplateHeaders);
 
-        return restCall.exchange(url, httpMethod, requestEntity, String.class);
+        return executeRestTemplateExchangeWaitStringResponse(url, httpMethod, restCall, requestEntity);
+    }
+
+    protected ResponseEntity<String> executeRestTemplateExchangeWaitStringResponse(String url, HttpMethod httpMethod,
+                                                                                   RestTemplate restTemplate,
+                                                                                   HttpEntity<String> requestEntity) {
+        return restTemplate.exchange(url, httpMethod, requestEntity, String.class);
     }
 }
