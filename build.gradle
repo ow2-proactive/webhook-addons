@@ -1,24 +1,48 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.3.3.RELEASE'
+    }
+}
+
 group 'org.ow2.proactive'
 version projectVersion
 
-allprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'spring-boot'
 
+configurations {
+    // The following module is excluded to avoid clashes when embedded inside the ProActive Scheduler
+    all*.exclude module: 'spring-boot-starter-logging'
+
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+compileJava {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+}
 
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                snapshotRepository(url: "http://repository.activeeon.com/content/repositories/snapshots/") {
-                    authentication(userName: "${System.getProperty('nexusUsername')}",
-                            password: "${System.getProperty('nexusPassword')}")
-                }
-                repository(url: "http://repository.activeeon.com/content/repositories/releases/") {
-                    authentication(userName: "${System.getProperty('nexusUsername')}",
-                            password: "${System.getProperty('nexusPassword')}")
-                }
+repositories {
+    jcenter()
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            snapshotRepository(url: "http://repository.activeeon.com/content/repositories/snapshots/") {
+                authentication(userName: "${System.getProperty('nexusUsername')}",
+                        password: "${System.getProperty('nexusPassword')}")
+            }
+            repository(url: "http://repository.activeeon.com/content/repositories/releases/") {
+                authentication(userName: "${System.getProperty('nexusUsername')}",
+                        password: "${System.getProperty('nexusPassword')}")
             }
         }
     }
@@ -26,18 +50,25 @@ allprojects {
 
 defaultTasks 'clean', 'jar'
 
-repositories {
-    if (project.hasProperty('local')) {
-        mavenLocal()
-    }
-    jcenter()
-}
 
 dependencies {
+
+    compile 'org.projectlombok:lombok:1.16.6'
+
+    compile 'org.springframework.boot:spring-boot-starter-log4j2:1.3.3.RELEASE'
+    compile('org.springframework.boot:spring-boot-starter-web:1.3.3.RELEASE') {
+        exclude module: 'spring-boot-starter-tomcat'
+        exclude module: 'spring-boot-starter-validation'
+    }
+    compile 'io.springfox:springfox-spring-web:2.4.0'
+
     compile 'org.json:json:20160810'
-    compile group: 'org.springframework.android', name: 'spring-android-rest-template', version: '1.0.1.RELEASE'
-    testCompile group: 'org.mockito', name: 'mockito-all', version:'1.9.5'
+
+    testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
+    testCompile 'com.google.truth:truth:0.28'
     testCompile 'junit:junit:4.12'
+    testCompile 'nl.jqno.equalsverifier:equalsverifier:2.0.2'
+    testCompile 'org.mockito:mockito-core:1.10.19'
 }
 
 jar {

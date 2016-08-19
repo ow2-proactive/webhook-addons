@@ -32,21 +32,30 @@
  *
  *  * $$ACTIVEEON_CONTRIBUTOR$$
  */
-package org.ow2.proactive.addons.webhook.service;
-
-import org.json.JSONObject;
-import org.springframework.http.HttpHeaders;
+package org.ow2.proactive.addons.webhook;
 
 
-public class JsonStringToRestHttpHeaders {
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import org.ow2.proactive.addons.webhook.exception.UnsuccessfulRequestException;
+import org.ow2.proactive.addons.webhook.service.JsonRestRequestService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-    public HttpHeaders convert(String jsonHeaders) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        JSONObject jsonHeaderObject = org.json.HTTP.toJSONObject(jsonHeaders);
+@AllArgsConstructor
+public class WebhookExecutor {
 
-        jsonHeaderObject.keys()
-                .forEachRemaining(key -> httpHeaders.add(key, jsonHeaderObject.getString(key)));
+    private JsonRestRequestService jsonRestRequestService;
 
-        return httpHeaders;
+    public void execute(String method, String url, String headers, String content) throws UnsuccessfulRequestException {
+        ResponseEntity<String> restResponse = jsonRestRequestService.doRequest(method, headers, url, content);
+
+        if (isResponseCodeIndicatingFailure(restResponse)) {
+            throw new UnsuccessfulRequestException(restResponse.toString());
+        }
+    }
+
+    private static boolean isResponseCodeIndicatingFailure(ResponseEntity<String> restCallResponse) {
+        return restCallResponse.getStatusCode().value() >= HttpStatus.BAD_REQUEST.value();
     }
 }
