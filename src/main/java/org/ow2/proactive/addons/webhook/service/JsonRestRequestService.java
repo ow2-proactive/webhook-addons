@@ -60,6 +60,7 @@ public class JsonRestRequestService {
         return executeRestTemplateExchangeWaitStringResponse(url, httpMethod, restCall, requestEntity);
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected ResponseEntity<String> executeRestTemplateExchangeWaitStringResponse(String url, HttpMethod httpMethod,
                                                                                    RestTemplate restTemplate,
                                                                                    HttpEntity<String> requestEntity) {

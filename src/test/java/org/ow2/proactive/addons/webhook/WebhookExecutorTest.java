@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class WebhookExecutorTest {
 
+    @SuppressWarnings("CanBeFinal")
     @Mock
     JsonRestRequestService mockJsonRestRequestService;
 

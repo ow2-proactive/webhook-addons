@@ -1,17 +1,15 @@
 package org.ow2.proactive.addons.webhook.service;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 
 public class JsonStringToRestHttpHeadersTest {
 
+    @SuppressWarnings("CanBeFinal")
     private JsonStringToRestHttpHeaders jsonStringToRestHttpHeaders = new JsonStringToRestHttpHeaders();
 
     @Test

@@ -15,10 +15,11 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JsonRestRequestServiceTest {
+    @SuppressWarnings("CanBeFinal")
     @Mock
-    JsonStringToRestHttpHeaders mockJsonStringToRestHttpHeaders;
+    private JsonStringToRestHttpHeaders mockJsonStringToRestHttpHeaders;
 
-    JsonRestRequestService jsonRestRequestService;
+    private JsonRestRequestService jsonRestRequestService;
 
     @Before
     public void setUp() {
@@ -28,6 +29,7 @@ public class JsonRestRequestServiceTest {
                 spy(new JsonRestRequestService(mockJsonStringToRestHttpHeaders));
 
         // Don't actually do the rest call - mock the protected method which executes the rest call
+        //noinspection unchecked
         doReturn(new ResponseEntity(HttpStatus.ACCEPTED)).
                 when(this.jsonRestRequestService).executeRestTemplateExchangeWaitStringResponse(
                 any(String.class),
@@ -63,6 +65,7 @@ public class JsonRestRequestServiceTest {
         // Reset spy
         this.jsonRestRequestService =
                 spy(new JsonRestRequestService(mockJsonStringToRestHttpHeaders));
+        //noinspection unchecked
         doReturn(new ResponseEntity(HttpStatus.ACCEPTED)).
                 when(this.jsonRestRequestService).executeRestTemplateExchangeWaitStringResponse(
                 notNull(String.class),
@@ -74,13 +77,14 @@ public class JsonRestRequestServiceTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testThatNullpointerExceptionIsThrownIfMethodIsNull() {
+    public void testThatNullPointerExceptionIsThrownIfMethodIsNull() {
         this.jsonRestRequestService.doRequest(null, "", "", "");
     }
 
     @Test
     public void testThatRestTemplateExchangeIsExecuted() {
         RestTemplate spyRestTemplate = spy(new RestTemplate());
+        //noinspection unchecked
         doReturn(ResponseEntity.ok("Ok"))
                 .when(spyRestTemplate)
                 .exchange(
@@ -90,6 +94,7 @@ public class JsonRestRequestServiceTest {
                         notNull(Class.class));
 
         this.jsonRestRequestService = new JsonRestRequestService(this.mockJsonStringToRestHttpHeaders);
+        //noinspection unchecked
         this.jsonRestRequestService.executeRestTemplateExchangeWaitStringResponse(
                 "",
                 HttpMethod.GET,

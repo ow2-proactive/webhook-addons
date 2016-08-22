@@ -37,8 +37,10 @@ package org.ow2.proactive.addons.webhook;
 import org.ow2.proactive.addons.webhook.service.JsonRestRequestService;
 import org.ow2.proactive.addons.webhook.service.JsonStringToRestHttpHeaders;
 
+@SuppressWarnings("WeakerAccess")
 public class Webhook {
 
+    @SuppressWarnings("CanBeFinal")
     private static WebhookExecutor webhookExecutor = new WebhookExecutor(new JsonRestRequestService(new JsonStringToRestHttpHeaders()));
 
     // Example with GET

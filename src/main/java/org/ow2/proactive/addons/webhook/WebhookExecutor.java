@@ -36,16 +36,20 @@ package org.ow2.proactive.addons.webhook;
 
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import org.ow2.proactive.addons.webhook.exception.UnsuccessfulRequestException;
 import org.ow2.proactive.addons.webhook.service.JsonRestRequestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+@SuppressWarnings("WeakerAccess")
 @AllArgsConstructor
 public class WebhookExecutor {
 
     private JsonRestRequestService jsonRestRequestService;
+
+    private static boolean isResponseCodeIndicatingFailure(ResponseEntity<String> restCallResponse) {
+        return restCallResponse.getStatusCode().value() >= HttpStatus.BAD_REQUEST.value();
+    }
 
     public void execute(String method, String url, String headers, String content) throws UnsuccessfulRequestException {
         ResponseEntity<String> restResponse = jsonRestRequestService.doRequest(method, headers, url, content);
@@ -53,9 +57,5 @@ public class WebhookExecutor {
         if (isResponseCodeIndicatingFailure(restResponse)) {
             throw new UnsuccessfulRequestException(restResponse.toString());
         }
-    }
-
-    private static boolean isResponseCodeIndicatingFailure(ResponseEntity<String> restCallResponse) {
-        return restCallResponse.getStatusCode().value() >= HttpStatus.BAD_REQUEST.value();
     }
 }
