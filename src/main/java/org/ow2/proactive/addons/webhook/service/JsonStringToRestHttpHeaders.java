@@ -35,14 +35,19 @@
 package org.ow2.proactive.addons.webhook.service;
 
 import org.json.JSONObject;
+import org.springframework.boot.json.JsonParser;
 import org.springframework.http.HttpHeaders;
+
+import java.util.List;
+
+import static org.json.JSONML.toJSONObject;
 
 
 public class JsonStringToRestHttpHeaders {
 
     public HttpHeaders convert(String jsonHeaders) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        JSONObject jsonHeaderObject = org.json.HTTP.toJSONObject(jsonHeaders);
+        JSONObject jsonHeaderObject = new JSONObject(jsonHeaders);
 
         jsonHeaderObject.keys()
                 .forEachRemaining(key -> httpHeaders.add(key, jsonHeaderObject.getString(key)));

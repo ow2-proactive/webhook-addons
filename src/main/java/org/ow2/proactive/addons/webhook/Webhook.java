@@ -39,6 +39,8 @@ import org.ow2.proactive.addons.webhook.service.JsonStringToRestHttpHeaders;
 
 public class Webhook {
 
+    private static WebhookExecutor webhookExecutor = new WebhookExecutor(new JsonRestRequestService(new JsonStringToRestHttpHeaders()));
+
     // Example with GET
     // method: "GET"
     // url: "http://www.activeeon.com"
@@ -51,6 +53,8 @@ public class Webhook {
     // content: "{\"id\": \"demo-aws\",\"type\": \"aws-ec2\",\"credentials\": {\"username\": \"AKIAIXZCJACIJA7YL3AQ\",\"password\": \"fMWyE93klwSIzLxO8wTAnGlQNdNHWForaN6hMOq\"}}"
 
     public static void execute(String method, String url, String headers, String content) throws Throwable {
-        new WebhookExecutor(new JsonRestRequestService(new JsonStringToRestHttpHeaders())).execute(method, url, headers, content);
+        webhookExecutor.execute(method, url, headers, content);
     }
+
+
 }
