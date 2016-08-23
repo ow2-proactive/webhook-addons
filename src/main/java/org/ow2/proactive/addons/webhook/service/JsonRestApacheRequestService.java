@@ -36,34 +36,41 @@ package org.ow2.proactive.addons.webhook.service;
 
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.client.fluent.Response;
+import org.apache.http.entity.ContentType;
+import org.ow2.proactive.addons.webhook.model.RestResponse;
+
+import java.io.IOException;
+import java.util.Map;
 
 @AllArgsConstructor
-public class JsonRestRequestService {
+public class JsonRestApacheRequestService {
 
-    private JsonStringToRestHttpHeaders jsonStringToRestHttpHeaders;
+    private JsonStringToHeaderMap jsonStringToHeaderMap;
+    private ApacheHttpClientRequestGetter apacheHttpClientRequestGetter;
 
-    public ResponseEntity<String> doRequest(String restMethod, String jsonHeader, String url, String content) {
-        // Get rest method
-        HttpMethod httpMethod = HttpMethod.valueOf(restMethod);
 
-        RestTemplate restCall = new RestTemplate();
+    public RestResponse doRequest(String restMethod, String jsonHeader, String url, String content) throws IOException {
+        Request request = apacheHttpClientRequestGetter.getHttpRequestByString(restMethod, url);
 
-        HttpHeaders restTemplateHeaders = jsonStringToRestHttpHeaders.convert(jsonHeader);
+        for (Map.Entry<String, String> entry : jsonStringToHeaderMap.convert(jsonHeader).entrySet()) {
+            request.addHeader(entry.getKey(), entry.getKey());
+        }
 
-        HttpEntity<String> requestEntity = new HttpEntity<>(content, restTemplateHeaders);
+        if(content != null && !content.isEmpty()) {
+            request.bodyString(content, ContentType.TEXT_PLAIN);
+        }
 
-        return executeRestTemplateExchangeWaitStringResponse(url, httpMethod, restCall, requestEntity);
+        return executeRequest(request);
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected ResponseEntity<String> executeRestTemplateExchangeWaitStringResponse(String url, HttpMethod httpMethod,
-                                                                                   RestTemplate restTemplate,
-                                                                                   HttpEntity<String> requestEntity) {
-        return restTemplate.exchange(url, httpMethod, requestEntity, String.class);
+    protected RestResponse executeRequest(final Request request) throws IOException {
+        Response requestResponse = request.execute();
+
+        return new RestResponse(
+                requestResponse.returnResponse().getStatusLine().getStatusCode(),
+                requestResponse.returnContent().asString());
     }
 }

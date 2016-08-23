@@ -1,14 +1,14 @@
 package org.ow2.proactive.addons.webhook;
 
+import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.ow2.proactive.addons.webhook.exception.UnsuccessfulRequestException;
-import org.ow2.proactive.addons.webhook.service.JsonRestRequestService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.ow2.proactive.addons.webhook.model.RestResponse;
+import org.ow2.proactive.addons.webhook.service.JsonRestApacheRequestService;
+
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -17,77 +17,78 @@ public class WebhookExecutorTest {
 
     @SuppressWarnings("CanBeFinal")
     @Mock
-    JsonRestRequestService mockJsonRestRequestService;
+    JsonRestApacheRequestService mockJsonRestApacheRequestService;
 
     @Test(expected = UnsuccessfulRequestException.class)
     public void testThatErrorResponseThrowsExceptionBadGateWay() throws Throwable {
-        when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.BAD_GATEWAY));
+        when(mockJsonRestApacheRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(new RestResponse(HttpStatus.SC_BAD_GATEWAY, "BAD"));
 
-        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestApacheRequestService).execute("", "", "", "");
     }
 
     @Test(expected = UnsuccessfulRequestException.class)
     public void testThatErrorResponseThrowsExceptionUNAUTHORIZED() throws Throwable {
-        when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.UNAUTHORIZED));
+        when(mockJsonRestApacheRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(new RestResponse(HttpStatus.SC_UNAUTHORIZED, "UNAUTHORIZED"));
 
-        new WebhookExecutor(mockJsonRestRequestService).execute("POST", "", "", "");
+        new WebhookExecutor(mockJsonRestApacheRequestService).execute("POST", "", "", "");
     }
 
     @Test(expected = UnsuccessfulRequestException.class)
     public void testThatErrorResponseThrowsExceptionFORBIDDEN() throws Throwable {
-        when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.FORBIDDEN));
+        when(mockJsonRestApacheRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(new RestResponse(HttpStatus.SC_FORBIDDEN, "FORBIDDEN"));
 
-        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestApacheRequestService).execute("", "", "", "");
     }
 
     @Test(expected = UnsuccessfulRequestException.class)
     public void testThatErrorResponseThrowsExceptionNOT_FOUND() throws Throwable {
-        when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.NOT_FOUND));
+        when(mockJsonRestApacheRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(new RestResponse(HttpStatus.SC_NOT_FOUND, "NOT_FOUND"));
 
-        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestApacheRequestService).execute("", "", "", "");
     }
 
     @Test(expected = UnsuccessfulRequestException.class)
     public void testThatErrorResponseThrowsExceptionSERVICE_UNAVAILABLE() throws Throwable {
-        when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE));
+        when(mockJsonRestApacheRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(new RestResponse(HttpStatus.SC_SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE"));
 
-        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestApacheRequestService).execute("", "", "", "");
     }
 
     @Test
     public void testThatErrorResponseSucceedsACCEPTED() throws Throwable {
-        when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.ACCEPTED));
+        when(mockJsonRestApacheRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(new RestResponse(HttpStatus.SC_ACCEPTED, "ACCEPTED"));
 
-        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestApacheRequestService).execute("", "", "", "");
     }
 
     @Test
     public void testThatErrorResponseSucceedsCREATED() throws Throwable {
-        when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.CREATED));
+        when(mockJsonRestApacheRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(new RestResponse(HttpStatus.SC_CREATED, "CREATED"));
 
-        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestApacheRequestService).execute("", "", "", "");
     }
 
     @Test
     public void testThatErrorResponseSucceedsOK() throws Throwable {
-        when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.OK));
+        when(mockJsonRestApacheRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(new RestResponse(HttpStatus.SC_OK, "OK"));
 
-        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestApacheRequestService).execute("", "", "", "");
     }
 
     @Test
     public void testThatErrorResponseSucceedsNON_AUTHORITATIVE_INFORMATION() throws Throwable {
-        when(mockJsonRestRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(new ResponseEntity<>("Hello World", new HttpHeaders(), HttpStatus.NON_AUTHORITATIVE_INFORMATION));
+        when(mockJsonRestApacheRequestService.doRequest(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(new RestResponse(HttpStatus.SC_NON_AUTHORITATIVE_INFORMATION, "NON_AUTHORITATIVE_INFORMATION"));
 
-        new WebhookExecutor(mockJsonRestRequestService).execute("", "", "", "");
+        new WebhookExecutor(mockJsonRestApacheRequestService).execute("", "", "", "");
     }
+
 }

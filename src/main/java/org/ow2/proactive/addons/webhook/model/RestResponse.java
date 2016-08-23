@@ -32,33 +32,17 @@
  *
  *  * $$ACTIVEEON_CONTRIBUTOR$$
  */
-package org.ow2.proactive.addons.webhook;
-
+package org.ow2.proactive.addons.webhook.model;
 
 import lombok.AllArgsConstructor;
-import org.apache.http.HttpStatus;
-import org.ow2.proactive.addons.webhook.exception.UnsuccessfulRequestException;
-import org.ow2.proactive.addons.webhook.model.RestResponse;
-import org.ow2.proactive.addons.webhook.service.JsonRestApacheRequestService;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 
-import java.io.IOException;
-
-@SuppressWarnings("WeakerAccess")
 @AllArgsConstructor
-public class WebhookExecutor {
-
-    private JsonRestApacheRequestService jsonRestApacheRequestService;
-
-    private static boolean isResponseCodeIndicatingFailure(int restCallResponseCode) {
-        return restCallResponseCode >= HttpStatus.SC_BAD_REQUEST;
-    }
-
-    public void execute(String method, String url, String headers, String content) throws UnsuccessfulRequestException, IOException {
-        RestResponse restResponse = jsonRestApacheRequestService.doRequest(method, headers, url, content);
-
-        if (isResponseCodeIndicatingFailure(restResponse.getResponseCode())) {
-            throw new UnsuccessfulRequestException(restResponse.toString());
-        }
-    }
+@EqualsAndHashCode
+@Getter
+public class RestResponse {
+    private int responseCode;
+    private String response;
 }

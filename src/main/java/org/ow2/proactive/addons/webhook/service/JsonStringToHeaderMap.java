@@ -32,33 +32,24 @@
  *
  *  * $$ACTIVEEON_CONTRIBUTOR$$
  */
-package org.ow2.proactive.addons.webhook;
+package org.ow2.proactive.addons.webhook.service;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
-import lombok.AllArgsConstructor;
-import org.apache.http.HttpStatus;
-import org.ow2.proactive.addons.webhook.exception.UnsuccessfulRequestException;
-import org.ow2.proactive.addons.webhook.model.RestResponse;
-import org.ow2.proactive.addons.webhook.service.JsonRestApacheRequestService;
+public class JsonStringToHeaderMap {
 
+    public Map<String, String> convert(String jsonHeaders) {
+        JSONObject jsonHeaderObject = new JSONObject(jsonHeaders);
 
-import java.io.IOException;
+        Map<String, String> headerMap = new HashMap<>();
 
-@SuppressWarnings("WeakerAccess")
-@AllArgsConstructor
-public class WebhookExecutor {
+        jsonHeaderObject.keys()
+                .forEachRemaining(key -> headerMap.put(key, jsonHeaderObject.getString(key)));
 
-    private JsonRestApacheRequestService jsonRestApacheRequestService;
-
-    private static boolean isResponseCodeIndicatingFailure(int restCallResponseCode) {
-        return restCallResponseCode >= HttpStatus.SC_BAD_REQUEST;
-    }
-
-    public void execute(String method, String url, String headers, String content) throws UnsuccessfulRequestException, IOException {
-        RestResponse restResponse = jsonRestApacheRequestService.doRequest(method, headers, url, content);
-
-        if (isResponseCodeIndicatingFailure(restResponse.getResponseCode())) {
-            throw new UnsuccessfulRequestException(restResponse.toString());
-        }
+        return headerMap;
     }
 }

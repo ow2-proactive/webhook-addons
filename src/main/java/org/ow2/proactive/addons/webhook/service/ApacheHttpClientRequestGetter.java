@@ -34,24 +34,32 @@
  */
 package org.ow2.proactive.addons.webhook.service;
 
-import org.json.JSONObject;
-import org.springframework.boot.json.JsonParser;
-import org.springframework.http.HttpHeaders;
 
-import java.util.List;
+import org.apache.http.client.fluent.Request;
 
-import static org.json.JSONML.toJSONObject;
+public class ApacheHttpClientRequestGetter {
 
 
-public class JsonStringToRestHttpHeaders {
-
-    public HttpHeaders convert(String jsonHeaders) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        JSONObject jsonHeaderObject = new JSONObject(jsonHeaders);
-
-        jsonHeaderObject.keys()
-                .forEachRemaining(key -> httpHeaders.add(key, jsonHeaderObject.getString(key)));
-
-        return httpHeaders;
+    public Request getHttpRequestByString(String method, String url) {
+        switch (method) {
+            case "GET":
+                return Request.Get(url);
+            case "POST":
+                return Request.Post(url);
+            case "HEAD":
+                return Request.Head(url);
+            case "PUT":
+                return Request.Put(url);
+            case "PATCH":
+                return Request.Patch(url);
+            case "DELETE":
+                return Request.Delete(url);
+            case "OPTIONS":
+                return Request.Options(url);
+            case "TRACE":
+                return Request.Trace(url);
+            default:
+                throw new IllegalArgumentException(method + " is not supported as a rest method");
+        }
     }
 }

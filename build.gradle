@@ -5,8 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.3.3.RELEASE'
-    }
+        }
 }
 
 group 'org.ow2.proactive'
@@ -14,12 +13,8 @@ version projectVersion
 
 apply plugin: 'java'
 apply plugin: 'maven'
-apply plugin: 'spring-boot'
 
 configurations {
-    // The following module is excluded to avoid clashes when embedded inside the ProActive Scheduler
-    all*.exclude module: 'spring-boot-starter-logging'
-
     integrationTestCompile.extendsFrom testCompile
     integrationTestRuntime.extendsFrom testRuntime
 }
@@ -55,12 +50,9 @@ dependencies {
 
     compile 'org.projectlombok:lombok:1.16.6'
 
-    compile 'org.springframework.boot:spring-boot-starter-log4j2:1.3.3.RELEASE'
-    compile('org.springframework.boot:spring-boot-starter-web:1.3.3.RELEASE') {
-        exclude module: 'spring-boot-starter-tomcat'
-        exclude module: 'spring-boot-starter-validation'
-    }
-    compile 'io.springfox:springfox-spring-web:2.4.0'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/fluent-hc
+    compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.2'
 
     compile 'org.json:json:20160810'
 

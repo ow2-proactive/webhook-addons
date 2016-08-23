@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.ow2.proactive.addons.webhook.exception.UnsuccessfulRequestException;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 import static org.mockito.Matchers.any;
@@ -24,7 +25,7 @@ public class WebhookTest {
     private Webhook webhook = new Webhook();
 
     @Before
-    public void setUp() throws UnsuccessfulRequestException, NoSuchFieldException, IllegalAccessException {
+    public void setUp() throws UnsuccessfulRequestException, NoSuchFieldException, IllegalAccessException, IOException {
         doNothing().when(webhookExecutor).execute(any(), any(), any(), any());
         overwriteStaticPrivateFieldForTest();
     }
