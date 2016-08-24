@@ -1,10 +1,7 @@
 package org.ow2.proactive.addons.webhook.service;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
 import org.apache.http.client.fluent.Request;
-import org.apache.http.client.fluent.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +11,11 @@ import org.ow2.proactive.addons.webhook.model.RestResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -28,6 +29,7 @@ public class JsonRestApacheRequestServiceTest {
     @SuppressWarnings("CanBeFinal")
     @Mock
     private JsonStringToHeaderMap mockJsonStringToHeaderMap;
+
     @SuppressWarnings("CanBeFinal")
     @Mock
     private ApacheHttpClientRequestGetter mockApacheHttpClientRequestGetter;
@@ -72,28 +74,31 @@ public class JsonRestApacheRequestServiceTest {
 
     @Test
     public void testThatRequestExecuteMethodIsExecuted() throws IOException {
-        Request spyRequest = spy(Request.Get(""));
+        TestThatExecuteMethodIsExecuted testThatExecuteMethodIsExecuted =
+                spy(new TestThatExecuteMethodIsExecuted());
 
-        Response mockResponse = mock(Response.class);
-        HttpResponse mockHttpResponse = mock(HttpResponse.class);
-        StatusLine mockStatusLine = mock(StatusLine.class);
+        RestResponse response = testThatExecuteMethodIsExecuted
+                .doRequest("", "", "", "");
 
-        when(mockStatusLine.getStatusCode()).thenReturn(200);
-        when(mockHttpResponse.getStatusLine()).thenReturn(mockStatusLine);
-        when(mockResponse.returnResponse()).thenReturn(mockHttpResponse);
+        verify(testThatExecuteMethodIsExecuted).executeRequest(any(Request.class));
+
+        assertThat(response.getResponseCode(), is(200));
+        assertThat(response.getResponse(), is("Ok"));
+    }
+
+    /*************** TEST CLASSES *************************/
 
 
-        doReturn(mockResponse)
-                .when(spyRequest)
-                .execute();
+    private class TestThatExecuteMethodIsExecuted extends JsonRestApacheRequestService {
 
-        this.jsonRestApacheRequestService =
-                new JsonRestApacheRequestService(
-                        this.mockJsonStringToHeaderMap,
-                        this.mockApacheHttpClientRequestGetter);
+        TestThatExecuteMethodIsExecuted() {
+            super(mockJsonStringToHeaderMap, mockApacheHttpClientRequestGetter);
+        }
 
-        this.jsonRestApacheRequestService.executeRequest(spyRequest);
+        @Override
+        protected RestResponse executeRequest(final Request request) throws IOException {
+            return new RestResponse(200, "Ok");
+        }
 
-        verify(spyRequest).execute();
     }
 }

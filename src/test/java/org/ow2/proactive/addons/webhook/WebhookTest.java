@@ -6,12 +6,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.ow2.proactive.addons.webhook.exception.UnsuccessfulRequestException;
+import org.ow2.proactive.addons.webhook.model.RestResponse;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -26,7 +28,7 @@ public class WebhookTest {
 
     @Before
     public void setUp() throws UnsuccessfulRequestException, NoSuchFieldException, IllegalAccessException, IOException {
-        doNothing().when(webhookExecutor).execute(any(), any(), any(), any());
+        doReturn(new RestResponse(200, "OK")).when(webhookExecutor).execute(any(), any(), any(), any());
         overwriteStaticPrivateFieldForTest();
     }
 
