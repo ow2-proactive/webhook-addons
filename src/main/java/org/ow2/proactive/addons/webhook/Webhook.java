@@ -59,7 +59,8 @@ public class Webhook {
     // content: "{\"id\": \"demo-aws\",\"type\": \"aws-ec2\",\"credentials\": {\"username\": \"AKIAIXZCJACIJA7YL3AQ\",\"password\": \"fMWyE93klwSIzLxO8wTAnGlQNdNHWForaN6hMOq\"}}"
 
     public static void execute(String method, String url, String headers, String content) throws Throwable {
-        webhookExecutor.execute(method, url, headers, content);
+        String stringResponse = webhookExecutor.execute(method, url, headers, content).getResponse();
+        System.out.println(stringResponse);
     }
 
 

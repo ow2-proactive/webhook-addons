@@ -36,9 +36,11 @@ package org.ow2.proactive.addons.webhook.service;
 
 
 import lombok.AllArgsConstructor;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.entity.ContentType;
+import org.apache.http.util.EntityUtils;
 import org.ow2.proactive.addons.webhook.model.RestResponse;
 
 import java.io.IOException;
@@ -55,7 +57,7 @@ public class JsonRestApacheRequestService {
         Request request = apacheHttpClientRequestGetter.getHttpRequestByString(restMethod, url);
 
         for (Map.Entry<String, String> entry : jsonStringToHeaderMap.convert(jsonHeader).entrySet()) {
-            request.addHeader(entry.getKey(), entry.getKey());
+            request.addHeader(entry.getKey(), entry.getValue());
         }
 
         if(content != null && !content.isEmpty()) {
@@ -68,9 +70,9 @@ public class JsonRestApacheRequestService {
     @SuppressWarnings("WeakerAccess")
     protected RestResponse executeRequest(final Request request) throws IOException {
         Response requestResponse = request.execute();
-
+        HttpResponse responseObject = requestResponse.returnResponse();
         return new RestResponse(
-                requestResponse.returnResponse().getStatusLine().getStatusCode(),
-                requestResponse.returnContent().asString());
+                responseObject.getStatusLine().getStatusCode(),
+                EntityUtils.toString(responseObject.getEntity()));
     }
 }

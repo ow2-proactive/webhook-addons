@@ -54,11 +54,13 @@ public class WebhookExecutor {
         return restCallResponseCode >= HttpStatus.SC_BAD_REQUEST;
     }
 
-    public void execute(String method, String url, String headers, String content) throws UnsuccessfulRequestException, IOException {
+    public RestResponse execute(String method, String url, String headers, String content) throws UnsuccessfulRequestException, IOException {
         RestResponse restResponse = jsonRestApacheRequestService.doRequest(method, headers, url, content);
 
         if (isResponseCodeIndicatingFailure(restResponse.getResponseCode())) {
             throw new UnsuccessfulRequestException(restResponse.toString());
         }
+
+        return restResponse;
     }
 }
