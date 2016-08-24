@@ -7,6 +7,7 @@ import java.io.IOException;
 
 public class ApacheHttpClientRequestGetterTest {
 
+    @SuppressWarnings("CanBeFinal")
     private ApacheHttpClientRequestGetter apacheHttpClientRequestGetter = new ApacheHttpClientRequestGetter();
 
     @Test

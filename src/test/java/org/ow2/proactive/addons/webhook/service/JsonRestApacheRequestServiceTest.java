@@ -14,17 +14,21 @@ import org.ow2.proactive.addons.webhook.model.RestResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JsonRestApacheRequestServiceTest {
     @SuppressWarnings("CanBeFinal")
     @Mock
     private JsonStringToHeaderMap mockJsonStringToHeaderMap;
+    @SuppressWarnings("CanBeFinal")
     @Mock
     private ApacheHttpClientRequestGetter mockApacheHttpClientRequestGetter;
 
@@ -33,7 +37,7 @@ public class JsonRestApacheRequestServiceTest {
     @Before
     public void setUp() throws IOException {
         when(mockJsonStringToHeaderMap.convert(anyString()))
-                .thenReturn(new HashMap<String, String>());
+                .thenReturn(new HashMap<>());
         this.jsonRestApacheRequestService =
                 spy(new JsonRestApacheRequestService(mockJsonStringToHeaderMap, mockApacheHttpClientRequestGetter));
 
