@@ -28,42 +28,39 @@
  *
  *  Initial developer(s):               The ProActive Team
  *                        http://proactive.inria.fr/team_members.htm
- *  Contributor(s):
+ *  Contributor(s): ActiveEon Team - http://www.activeeon.com
  *
- *  * $$ACTIVEEON_INITIAL_DEV$$
+ *  * $$ACTIVEEON_CONTRIBUTOR$$
  */
 package org.ow2.proactive.addons.webhook;
 
+
+import lombok.AllArgsConstructor;
+import org.apache.http.HttpStatus;
+import org.ow2.proactive.addons.webhook.exception.UnsuccessfulRequestException;
 import org.ow2.proactive.addons.webhook.model.RestResponse;
-import org.ow2.proactive.addons.webhook.service.ApacheHttpClientRequestGetter;
 import org.ow2.proactive.addons.webhook.service.JsonRestApacheRequestService;
-import org.ow2.proactive.addons.webhook.service.JsonStringToHeaderMap;
+
+
+import java.io.IOException;
 
 @SuppressWarnings("WeakerAccess")
-public class Webhook {
+@AllArgsConstructor
+public class WebhookExecutor {
 
-    @SuppressWarnings("CanBeFinal")
-    private static WebhookExecutor webhookExecutor = new WebhookExecutor(
-            new JsonRestApacheRequestService(
-                    new JsonStringToHeaderMap(),
-                    new ApacheHttpClientRequestGetter()));
+    private JsonRestApacheRequestService jsonRestApacheRequestService;
 
-    // Example with GET
-    // method: "GET"
-    // url: "http://www.activeeon.com"
-    // headers: "{User-Agent = Mozilla/5.0}"
-
-    // Example with POST
-    // method: "POST"
-    // url: "http://trydev.activeeon.com:8080/connector-iaas/infrastructures"
-    // headers: "{User-Agent = Mozilla/5.0, Content-Type = application/json}"
-    // content: "{\"id\": \"demo-aws\",\"type\": \"aws-ec2\",\"credentials\": {\"username\": \"AKIAIXZCJACIJA7YL3AQ\",\"password\": \"fMWyE93klwSIzLxO8wTAnGlQNdNHWForaN6hMOq\"}}"
-
-    public static RestResponse execute(String method, String url, String headers, String content) throws Throwable {
-        RestResponse response = webhookExecutor.execute(method, url, headers, content);
-        System.out.println(response.getResponse());
-        return response;
+    private static boolean isResponseCodeIndicatingFailure(int restCallResponseCode) {
+        return restCallResponseCode >= HttpStatus.SC_BAD_REQUEST;
     }
 
+    public RestResponse execute(String method, String url, String headers, String content) throws UnsuccessfulRequestException, IOException {
+        RestResponse restResponse = jsonRestApacheRequestService.doRequest(method, headers, url, content);
 
+        if (isResponseCodeIndicatingFailure(restResponse.getResponseCode())) {
+            throw new UnsuccessfulRequestException(restResponse.toString());
+        }
+
+        return restResponse;
+    }
 }
