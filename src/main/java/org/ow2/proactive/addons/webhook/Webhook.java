@@ -34,6 +34,7 @@
  */
 package org.ow2.proactive.addons.webhook;
 
+import org.ow2.proactive.addons.webhook.model.RestResponse;
 import org.ow2.proactive.addons.webhook.service.ApacheHttpClientRequestGetter;
 import org.ow2.proactive.addons.webhook.service.JsonRestApacheRequestService;
 import org.ow2.proactive.addons.webhook.service.JsonStringToHeaderMap;
@@ -58,9 +59,10 @@ public class Webhook {
     // headers: "{User-Agent = Mozilla/5.0, Content-Type = application/json}"
     // content: "{\"id\": \"demo-aws\",\"type\": \"aws-ec2\",\"credentials\": {\"username\": \"AKIAIXZCJACIJA7YL3AQ\",\"password\": \"fMWyE93klwSIzLxO8wTAnGlQNdNHWForaN6hMOq\"}}"
 
-    public static void execute(String method, String url, String headers, String content) throws Throwable {
-        String stringResponse = webhookExecutor.execute(method, url, headers, content).getResponse();
-        System.out.println(stringResponse);
+    public static RestResponse execute(String method, String url, String headers, String content) throws Throwable {
+        RestResponse response = webhookExecutor.execute(method, url, headers, content);
+        System.out.println(response.getResponse());
+        return response;
     }
 
 
