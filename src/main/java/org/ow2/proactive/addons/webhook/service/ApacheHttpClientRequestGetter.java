@@ -34,11 +34,10 @@
  */
 package org.ow2.proactive.addons.webhook.service;
 
-
 import org.apache.http.client.fluent.Request;
 
-public class ApacheHttpClientRequestGetter {
 
+public class ApacheHttpClientRequestGetter {
 
     public Request getHttpRequestByString(String method, String url) {
         switch (method) {
@@ -50,8 +49,6 @@ public class ApacheHttpClientRequestGetter {
                 return Request.Head(url);
             case "PUT":
                 return Request.Put(url);
-            case "PATCH":
-                return Request.Patch(url);
             case "DELETE":
                 return Request.Delete(url);
             case "OPTIONS":
